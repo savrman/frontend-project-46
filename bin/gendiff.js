@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 
-import { Command } from 'commander';
+import { Command, Option } from 'commander';
+import parseFile from '../src/parse-filepath.js';
+import genDiff from '../src/gendiff.js';
 
 const program = new Command();
 
@@ -10,10 +12,22 @@ program
   .version('0.1');
 
 program
-  .option('-f, --format [type]', 'output format');
+  .addOption(
+    new Option('-f, --format [type]', 'output format')
+      .choices([
+        'json',
+        'plain',
+      ])
+      .default('plain'),
+  );
 
 program
   .argument('<filepath1>')
-  .argument('<filepath2>');
+  .argument('<filepath2>')
+  .action((filepath1, filepath2, options) => {
+    console.log('Hello, World!');
+  });
 
 program.parse();
+
+const options = program.opts();
