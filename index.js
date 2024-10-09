@@ -1,5 +1,5 @@
 import genDiff from "./src/gendiff.js";
-import parse from "./src/parse.js";
+import parse from "./src/parsers.js";
 import { getFilepathInfo, getFileData } from "./src/fs-helper.js";
 
 export default (filepath1, filepath2) => {
