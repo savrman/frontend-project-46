@@ -6,42 +6,36 @@ const genDiff = (data1, data2) => {
       .toSorted();
 
     const diff = keys.reduce((arr, item) => {
-      if (!Object.hasOwn(data1, item)) {
+      if (typeof data1[item] === 'object' && typeof data2[item] === 'object') {
         arr.push({
           name: item,
-          type: 'flat',
-          state: 'added',
-          currentValue: data2[item],
+          type: 'nested',
+          children: iter(data1[item], data2[item]),
+        });
+      } else if (!Object.hasOwn(data1, item)) {
+        arr.push({
+          name: item,
+          type: 'added',
+          value: data2[item],
         });
       } else if (!Object.hasOwn(data2, item)) {
         arr.push({
           name: item,
-          type: 'flat',
-          state: 'deleted',
-          oldValue: data1[item],
+          type: 'deleted',
+          value: data1[item],
         });
       } else if (data1[item] !== data2[item]) {
-        if (typeof data1[item] === 'object' && typeof data2[item] === 'object') {
-          arr.push({
-            name: item,
-            type: 'nested',
-            children: iter(data1[item], data2[item]),
-          });
-        } else {
-          arr.push({
-            name: item,
-            type: 'flat',
-            state: 'changed',
-            oldValue: data1[item],
-            currentValue: data2[item],
-          });
-        }
+        arr.push({
+          name: item,
+          type: 'changed',
+          oldValue: data1[item],
+          value: data2[item],
+        });
       } else {
         arr.push({
           name: item,
-          type: 'flat',
-          state: 'unchanged',
-          currentValue: data2[item],
+          type: 'unchanged',
+          value: data2[item],
         });
       }
       return arr;
