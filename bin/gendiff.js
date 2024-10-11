@@ -3,6 +3,7 @@
 import { Command, Option } from 'commander';
 import genDiff from "../index.js";
 import formatStylish from '../src/formatters/format-stylish.js';
+import formatPlain from '../src/formatters/format-plain.js';
 
 const program = new Command();
 
@@ -28,7 +29,7 @@ program
     const diff = genDiff(filepath1, filepath2);
     const mapFormat = {
       stylish: formatStylish,
-      plain: '',
+      plain: formatPlain,
       json: '',
     };
     const result = mapFormat[options.format](diff);
