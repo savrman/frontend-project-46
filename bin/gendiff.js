@@ -2,8 +2,6 @@
 
 import { Command, Option } from 'commander';
 import genDiff from "../index.js";
-import formatStylish from '../src/formatters/format-stylish.js';
-import formatPlain from '../src/formatters/format-plain.js';
 
 const program = new Command();
 
@@ -18,6 +16,7 @@ program
       .choices([
         'stylish',
         'plain',
+        'json',
       ])
       .default('stylish'),
   );
@@ -26,16 +25,8 @@ program
   .argument('<filepath1>')
   .argument('<filepath2>')
   .action((filepath1, filepath2, options) => {
-    const diff = genDiff(filepath1, filepath2);
-    const mapFormat = {
-      stylish: formatStylish,
-      plain: formatPlain,
-      json: '',
-    };
-    const result = mapFormat[options.format](diff);
-    console.log(result);
+    const diff = genDiff(filepath1, filepath2, options.format);
+    console.log(diff);
   });
 
 program.parse();
-
-const options = program.opts();

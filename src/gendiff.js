@@ -47,7 +47,7 @@ const genDiff = (data1, data2) => {
     children: [
       ...iter(data1, data2)
     ],
-  }
+  };
 };
 
 export default genDiff;
