@@ -1,7 +1,7 @@
-import genDiff from "./src/gendiff.js";
-import parse from "./src/parsers.js";
-import { getFilepathInfo, getFileData } from "./src/fs-helper.js";
-import format from "./src/formatters/index.js";
+import genDiff from './src/gendiff.js';
+import parse from './src/parsers.js';
+import { getFilepathInfo, getFileData } from './src/fs-helper.js';
+import format from './src/formatters/index.js';
 
 export default (filepath1, filepath2, formatName) => {
   const fileInfo1 = getFilepathInfo(filepath1);

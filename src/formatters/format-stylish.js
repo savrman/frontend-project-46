@@ -6,7 +6,7 @@ const stringify = (value, depth) => {
     return `${value}`;
   }
   const lines = Object.entries(value)
-    .flatMap(([key, value]) => `${REPLACER.repeat(INDENT_SIZE * (depth + 1))}${key}: ${stringify(value, depth + 1)}`);
+    .flatMap(([key, val]) => `${REPLACER.repeat(INDENT_SIZE * (depth + 1))}${key}: ${stringify(val, depth + 1)}`);
   return [
     '{',
     ...lines,
@@ -19,34 +19,38 @@ const mapping = {
   added: (data, depth) => `${REPLACER.repeat(INDENT_SIZE * depth - 2)}+ ${data.key}: ${stringify(data.value, depth)}`,
   unchanged: (data, depth) => `${REPLACER.repeat(INDENT_SIZE * depth - 2)}  ${data.key}: ${stringify(data.value, depth)}`,
   changed: (data, depth) => [
-    mapping['deleted']({key: data.key, value: data.oldValue}, depth),
-    mapping['added']({key: data.key, value: data.value}, depth),
+    mapping.deleted({ key: data.key, value: data.oldValue }, depth),
+    mapping.added({ key: data.key, value: data.value }, depth),
   ].join('\n'),
 };
 
 const formatStylish = (tree) => {
-  const iter = (tree, depth) => {
-    if (tree.type === 'root') {
-      const lines = tree.children
+  const iter = (node, depth) => {
+    if (node.type === 'root') {
+      const lines = node.children
         .flatMap((child) => iter(child, depth));
       return [
         '{',
         ...lines,
-        '}'
+        '}',
       ].join('\n');
     }
 
-    if (tree.type === 'nested') {
-      const lines = tree.children
+    if (node.type === 'nested') {
+      const lines = node.children
         .flatMap((child) => iter(child, depth + 1));
       return [
-        `${REPLACER.repeat(INDENT_SIZE * depth - 2)}  ${tree.name}: {`,
+        `${REPLACER.repeat(INDENT_SIZE * depth - 2)}  ${node.name}: {`,
         ...lines,
         `${REPLACER.repeat(INDENT_SIZE * depth)}}`,
-      ]
+      ];
     }
 
-    return mapping[tree.type]({key: tree.name, value: tree.value, oldValue: tree.oldValue}, depth);
+    return mapping[node.type]({
+      key: node.name,
+      value: node.value,
+      oldValue: node.oldValue,
+    }, depth);
   };
 
   return iter(tree, 1);

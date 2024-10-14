@@ -23,8 +23,6 @@ const getFilepathInfo = (filePath) => {
   };
 };
 
-const getFileData = (filePath) => {
-  return fs.readFileSync(filePath);
-};
+const getFileData = (filePath) => fs.readFileSync(filePath);
 
 export { getAbsolutePath, getFilepathInfo, getFileData };

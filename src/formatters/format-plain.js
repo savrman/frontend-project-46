@@ -1,4 +1,4 @@
-const stringify = (value) => (typeof value !== 'object' || value === null) ? `'${value}'` : `[complex value]`;
+const stringify = (value) => ((typeof value !== 'object' || value === null) ? `'${value}'` : '[complex value]');
 
 const mapping = {
   deleted: (tree, path) => `Property '${[...path, tree.name].join('.')}' was removed`,
@@ -7,26 +7,26 @@ const mapping = {
 };
 
 const formatPlain = (tree) => {
-  const iter = (tree, path) => {
-    if (tree.type === 'root') {
-      const lines = tree.children
+  const iter = (node, path) => {
+    if (node.type === 'root') {
+      const lines = node.children
         .filter((child) => child.type !== 'unchanged')
         .flatMap((child) => iter(child, []));
       return [
-        ...lines
+        ...lines,
       ].join('\n');
     }
 
-    if (tree.type === 'nested') {
-      const lines = tree.children
+    if (node.type === 'nested') {
+      const lines = node.children
         .filter((child) => child.type !== 'unchanged')
-        .flatMap((child) => iter(child, [...path, tree.name]));
+        .flatMap((child) => iter(child, [...path, node.name]));
       return [
-        ...lines
+        ...lines,
       ];
     }
 
-    return mapping[tree.type](tree, path);
+    return mapping[node.type](node, path);
   };
 
   return iter(tree, 1);

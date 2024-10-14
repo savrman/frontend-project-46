@@ -1,4 +1,4 @@
-const genDiff = (data1, data2) => {
+const genDiff = (obj1, obj2) => {
   const iter = (data1, data2) => {
     const keys = [data1, data2]
       .flatMap((item) => Object.keys(item))
@@ -41,11 +41,11 @@ const genDiff = (data1, data2) => {
       return arr;
     }, []);
     return diff;
-  }
+  };
   return {
     type: 'root',
     children: [
-      ...iter(data1, data2)
+      ...iter(obj1, obj2),
     ],
   };
 };
