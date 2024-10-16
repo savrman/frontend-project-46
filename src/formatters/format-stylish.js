@@ -1,23 +1,25 @@
 const REPLACER = ' ';
 const INDENT_SIZE = 4;
 
+const indent = (depth, trimSize = 0) => REPLACER.repeat(INDENT_SIZE * depth - trimSize);
+
 const stringify = (value, depth) => {
   if (typeof value !== 'object' || value === null) {
     return `${value}`;
   }
   const lines = Object.entries(value)
-    .flatMap(([key, val]) => `${REPLACER.repeat(INDENT_SIZE * (depth + 1))}${key}: ${stringify(val, depth + 1)}`);
+    .flatMap(([key, val]) => `${indent(depth + 1)}${key}: ${stringify(val, depth + 1)}`);
   return [
     '{',
     ...lines,
-    `${REPLACER.repeat(INDENT_SIZE * depth)}}`,
+    `${indent(depth)}}`,
   ].join('\n');
 };
 
 const mapping = {
-  deleted: (data, depth) => `${REPLACER.repeat(INDENT_SIZE * depth - 2)}- ${data.key}: ${stringify(data.value, depth)}`,
-  added: (data, depth) => `${REPLACER.repeat(INDENT_SIZE * depth - 2)}+ ${data.key}: ${stringify(data.value, depth)}`,
-  unchanged: (data, depth) => `${REPLACER.repeat(INDENT_SIZE * depth - 2)}  ${data.key}: ${stringify(data.value, depth)}`,
+  deleted: (data, depth) => `${indent(depth, 2)}- ${data.key}: ${stringify(data.value, depth)}`,
+  added: (data, depth) => `${indent(depth, 2)}+ ${data.key}: ${stringify(data.value, depth)}`,
+  unchanged: (data, depth) => `${indent(depth, 2)}  ${data.key}: ${stringify(data.value, depth)}`,
   changed: (data, depth) => [
     mapping.deleted({ key: data.key, value: data.oldValue }, depth),
     mapping.added({ key: data.key, value: data.value }, depth),
@@ -40,9 +42,9 @@ const formatStylish = (tree) => {
       const lines = node.children
         .flatMap((child) => iter(child, depth + 1));
       return [
-        `${REPLACER.repeat(INDENT_SIZE * depth - 2)}  ${node.name}: {`,
+        `${indent(depth, 2)}  ${node.name}: {`,
         ...lines,
-        `${REPLACER.repeat(INDENT_SIZE * depth)}}`,
+        `${indent(depth)}}`,
       ];
     }
 
