@@ -1,4 +1,8 @@
-const stringify = (value) => ((typeof value !== 'object' || value === null) ? `'${value}'` : '[complex value]');
+const stringify = (value) => {
+  if (typeof value === 'string') return `'${value}'`;
+  if (typeof value !== 'object' || value === null) return `${value}`;
+  return '[complex value]';
+};
 
 const mapping = {
   deleted: (tree, path) => `Property '${[...path, tree.name].join('.')}' was removed`,
