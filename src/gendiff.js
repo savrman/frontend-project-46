@@ -1,12 +1,14 @@
 const genDiff = (obj1, obj2) => {
   const iter = (data1, data2) => {
-    const keys = [data1, data2]
-      .flatMap((item) => Object.keys(item))
-      .filter((item, ix, arr) => arr.findIndex((val) => val === item) === ix)
-      .toSorted();
+    const isObject = (value) => (typeof value === 'object' && value !== null);
+
+    const keys = [...new Set([
+      ...Object.getOwnPropertyNames(data1),
+      ...Object.getOwnPropertyNames(data2),
+    ])].toSorted();
 
     const diff = keys.reduce((arr, item) => {
-      if (typeof data1[item] === 'object' && typeof data2[item] === 'object') {
+      if (isObject(data1[item]) && isObject(data2[item])) {
         arr.push({
           name: item,
           type: 'nested',
@@ -44,9 +46,7 @@ const genDiff = (obj1, obj2) => {
   };
   return {
     type: 'root',
-    children: [
-      ...iter(obj1, obj2),
-    ],
+    children: iter(obj1, obj2),
   };
 };
 
