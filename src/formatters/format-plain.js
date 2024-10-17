@@ -7,19 +7,19 @@ const stringify = (value) => {
 const mapping = {
   root: (tree, path) => {
     const lines = tree.children
-      .flatMap((child) => mapping[child.type](child, path))
-      .filter((child) => child !== '');
+      .filter((child) => child.type !== 'unchanged')
+      .flatMap((child) => mapping[child.type](child, path));
     return lines.join('\n');
   },
   nested: (tree, path) => {
     const lines = tree.children
+      .filter((child) => child.type !== 'unchanged')
       .flatMap((child) => mapping[child.type](child, [...path, tree.name]));
     return lines;
   },
   deleted: (tree, path) => `Property '${[...path, tree.name].join('.')}' was removed`,
   added: (tree, path) => `Property '${[...path, tree.name].join('.')}' was added with value: ${stringify(tree.value)}`,
   changed: (tree, path) => `Property '${[...path, tree.name].join('.')}' was updated. From ${stringify(tree.oldValue)} to ${stringify(tree.value)}`,
-  unchanged: (tree, path) => '',
 };
 
 const formatPlain = (tree) => mapping[tree.type](tree, []);
