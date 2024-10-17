@@ -20,6 +20,7 @@ const mapping = {
   deleted: (tree, path) => `Property '${[...path, tree.name].join('.')}' was removed`,
   added: (tree, path) => `Property '${[...path, tree.name].join('.')}' was added with value: ${stringify(tree.value)}`,
   changed: (tree, path) => `Property '${[...path, tree.name].join('.')}' was updated. From ${stringify(tree.oldValue)} to ${stringify(tree.value)}`,
+  unchanged: (tree, path) => `Property '${[...path, tree.name].join('.')}' was not changed`,
 };
 
 const formatPlain = (tree) => mapping[tree.type](tree, []);
