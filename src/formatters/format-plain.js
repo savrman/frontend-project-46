@@ -5,35 +5,23 @@ const stringify = (value) => {
 };
 
 const mapping = {
+  root: (tree, path) => {
+    const lines = tree.children
+      .flatMap((child) => mapping[child.type](child, path))
+      .filter((child) => child !== '');
+    return lines.join('\n');
+  },
+  nested: (tree, path) => {
+    const lines = tree.children
+      .flatMap((child) => mapping[child.type](child, [...path, tree.name]));
+    return lines;
+  },
   deleted: (tree, path) => `Property '${[...path, tree.name].join('.')}' was removed`,
   added: (tree, path) => `Property '${[...path, tree.name].join('.')}' was added with value: ${stringify(tree.value)}`,
   changed: (tree, path) => `Property '${[...path, tree.name].join('.')}' was updated. From ${stringify(tree.oldValue)} to ${stringify(tree.value)}`,
+  unchanged: (tree, path) => '',
 };
 
-const formatPlain = (tree) => {
-  const iter = (node, path) => {
-    if (node.type === 'root') {
-      const lines = node.children
-        .filter((child) => child.type !== 'unchanged')
-        .flatMap((child) => iter(child, []));
-      return [
-        ...lines,
-      ].join('\n');
-    }
-
-    if (node.type === 'nested') {
-      const lines = node.children
-        .filter((child) => child.type !== 'unchanged')
-        .flatMap((child) => iter(child, [...path, node.name]));
-      return [
-        ...lines,
-      ];
-    }
-
-    return mapping[node.type](node, path);
-  };
-
-  return iter(tree, 1);
-};
+const formatPlain = (tree) => mapping[tree.type](tree, []);
 
 export default formatPlain;
