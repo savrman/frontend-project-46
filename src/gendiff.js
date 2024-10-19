@@ -1,47 +1,48 @@
+const isObject = (value) => (typeof value === 'object' && value !== null);
+
 const genDiff = (obj1, obj2) => {
   const iter = (data1, data2) => {
-    const isObject = (value) => (typeof value === 'object' && value !== null);
-
     const keys = [...new Set([
       ...Object.getOwnPropertyNames(data1),
       ...Object.getOwnPropertyNames(data2),
     ])].toSorted();
 
-    const diff = keys.reduce((arr, item) => {
-      if (isObject(data1[item]) && isObject(data2[item])) {
-        arr.push({
-          name: item,
+    const diff = keys.map((key) => {
+      if (isObject(data1[key]) && isObject(data2[key])) {
+        return {
+          name: key,
           type: 'nested',
-          children: iter(data1[item], data2[item]),
-        });
-      } else if (!Object.hasOwn(data1, item)) {
-        arr.push({
-          name: item,
-          type: 'added',
-          value: data2[item],
-        });
-      } else if (!Object.hasOwn(data2, item)) {
-        arr.push({
-          name: item,
-          type: 'deleted',
-          value: data1[item],
-        });
-      } else if (data1[item] !== data2[item]) {
-        arr.push({
-          name: item,
-          type: 'changed',
-          oldValue: data1[item],
-          value: data2[item],
-        });
-      } else {
-        arr.push({
-          name: item,
-          type: 'unchanged',
-          value: data2[item],
-        });
+          children: iter(data1[key], data2[key]),
+        };
       }
-      return arr;
-    }, []);
+      if (!Object.hasOwn(data1, key)) {
+        return {
+          name: key,
+          type: 'added',
+          value: data2[key],
+        };
+      }
+      if (!Object.hasOwn(data2, key)) {
+        return {
+          name: key,
+          type: 'deleted',
+          value: data1[key],
+        };
+      }
+      if (data1[key] !== data2[key]) {
+        return {
+          name: key,
+          type: 'changed',
+          oldValue: data1[key],
+          value: data2[key],
+        };
+      }
+      return {
+        name: key,
+        type: 'unchanged',
+        value: data2[key],
+      };
+    });
     return diff;
   };
   return {
