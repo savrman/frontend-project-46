@@ -6,7 +6,7 @@ import parse from '../src/parsers.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-const getFixturePath = (...paths) => path.join(__dirname, '..', '__fixtures__', ...paths);
+const getFixturePath = (pathList) => path.join(__dirname, '..', '__fixtures__', ...pathList);
 
 test('Parse unknown file extension', () => {
   const unknownFileExtension = 'unknwn';
@@ -14,6 +14,6 @@ test('Parse unknown file extension', () => {
 });
 
 test('Same output for YAML/YML file extensions', () => {
-  const fixtureDataYml = fs.readFileSync(getFixturePath('flat', 'file1.yml'));
+  const fixtureDataYml = fs.readFileSync(getFixturePath(['flat', 'file1.yml']));
   expect(parse(fixtureDataYml, 'yml')).toEqual(parse(fixtureDataYml, 'yaml'));
 });
